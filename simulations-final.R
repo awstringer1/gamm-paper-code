@@ -2,6 +2,8 @@
 ## Alex Stringer
 ## January 2025
 
+runinparallel <- .Platform$OS.type == "unix" # Run in parallel?
+
 ## Packages ##
 pkgs <- c(
   "lme4",
@@ -10,6 +12,7 @@ pkgs <- c(
   "TMB",
   "dplyr",
   "ggplot2",
+  "tidyr",
   "remotes"
 )
 for (pkg in pkgs) {
@@ -324,10 +327,14 @@ dosim <- function(lst) {
 ## Simulation ##
 
 set.seed(6431972)
-mc.reset.stream() # Reproducbility in parallel
+if (runinparallel) mc.reset.stream() # Reproducbility in parallel
 # Do the simulations
 tm <- Sys.time()
-sims <- mclapply(simlist, dosim)
+if (runinparallel) {
+  sims <- mclapply(simlist, dosim)
+} else {
+  sims <- lapply(simlist, dosim)
+}
 simtime <- as.numeric(difftime(Sys.time(), tm, units='secs'))
 cat("Finished simulations, they took", simtime, "seconds.\n")
 cat("Saving simulations...\n")
