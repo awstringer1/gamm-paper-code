@@ -13,7 +13,8 @@ pkgs <- c(
   "dplyr",
   "ggplot2",
   "tidyr",
-  "remotes"
+  "remotes",
+  "numDeriv"
 )
 for (pkg in pkgs) {
   if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
