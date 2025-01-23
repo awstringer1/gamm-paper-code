@@ -9,7 +9,8 @@ pkgs <- c(
   "parallel",
   "TMB",
   "dplyr",
-  "ggplot2"
+  "ggplot2",
+  "remotes"
 )
 for (pkg in pkgs) {
   if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
