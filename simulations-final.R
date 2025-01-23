@@ -301,6 +301,7 @@ dosim <- function(lst) {
   ), error = function(e) e, warning = function(w) w)
   if (inherits(res, "condition")) {
     cat("ERROR: Simulation ", lst$idx, " of ", length(simlist), ", m = ", lst$m, ", n = ", lst$n, ", k = ", lst$k, "\n", sep = "")
+    cat("Error message: ", res$message)
     return(NULL)
   }
 
