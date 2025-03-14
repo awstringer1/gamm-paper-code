@@ -6,7 +6,7 @@
 studies <- c("complexfunction", "k", "main", "multiple", "poisson", "sigma", "small") # Don't change
 args <- commandArgs(TRUE) # Returns character(0) if interactive
 if (length(args) > 0) {
-  simdate <- args[1]s
+  simdate <- args[1]
 } else {
   simdate <- "20250306"
 }
