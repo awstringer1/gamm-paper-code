@@ -11,4 +11,4 @@ them. This allows you to perform the simulations in multiple runs on multiple di
 it this way because running these simulations is extremely onerous. 
 To get the `1000` results for `01` reported
 in the main text and the `500` for `02-07` reported in the supplement took over a week of running in multiple
-batches on two side-by-side M4 Mac desktops.
+batches in parallel on two M4 Mac desktops.
