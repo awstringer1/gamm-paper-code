@@ -692,6 +692,81 @@ covrlineplot_small <- simresultslongcovr_small %>%
   coord_cartesian(ylim = c(0, 1)) +
   theme(text = element_text(size = PLOTTEXTSIZE), legend.position = "bottom")
 
+## Flat function ##
+
+simresults_flat_table <- simresults_flat %>%
+  group_by(n, m, sigma, k) %>%
+  summarize(numsims = n())
+  
+simresultslongbias_flat <- simresults_flat %>%
+  tidyr::pivot_longer(contains("bias"), names_to = "type", values_to = "bias") %>%
+  mutate(type = stringr::str_replace(type, "bias", ""))
+
+simresultslongcovr_flat <- simresults_flat %>%
+  tidyr::pivot_longer(contains("covr"), names_to = "type", values_to = "covr") %>%
+  mutate(type = stringr::str_replace(type, "covr", "")) %>%
+  filter(!stringr::str_detect(type, "sigma"))
+
+biasplot_flat <- simresultslongbias_flat %>%
+  filter(!stringr::str_detect(type, "sigma")) %>%
+  ggplot(aes(x = as.factor(m), y = bias)) +
+  theme_bw() +
+  facet_grid(k~n, labeller = labeller(k = k_labeller, n = n_labeller)) +
+  geom_boxplot(aes(fill = type)) +
+  scale_fill_manual(
+    values = c("gamm" = col_gamm, "gam" = col_gam, "new" = col_pml),
+    labels = c("gamm" = "GAMM", "gam" = "GAM", "new" = "PML (new)")) +
+  geom_hline(aes(yintercept = 0)) +
+  labs(
+    title = "Empirical bias, f(x)",
+    x = "Number of Groups",
+    y = "Empirical bias",
+    fill = "Parameter/Model"
+  ) +
+  theme(text = element_text(size = PLOTTEXTSIZE), legend.position = "bottom") +
+  coord_cartesian(ylim = c(-.05, .05)) +
+  scale_y_continuous(breaks = seq(-.05, .05, by = .01), labels = ~round(.x, 3))
+
+biasplotsigma_flat <- simresultslongbias_flat %>%
+  filter(stringr::str_detect(type, "sigma")) %>%
+  ggplot(aes(x = as.factor(m), y = bias)) +
+  theme_bw() +
+  facet_grid(k~n, labeller = labeller(k = k_labeller, n = n_labeller)) +
+  geom_boxplot(aes(fill = type)) +
+  scale_fill_manual(
+    values = c("sigmagamm" = col_gamm, "sigmanew.estimate" = col_pml),
+    labels = c("sigmagamm" = "GAMM", "sigmanew.estimate" = "PML (new)")) +
+  geom_hline(aes(yintercept = 0)) +
+  labs(
+    title = expression("Empirical bias,"~sigma),
+    x = "Number of Groups",
+    y = "Empirical bias",
+    fill = "Parameter/Model"
+  ) +
+  theme(text = element_text(size = PLOTTEXTSIZE), legend.position = "bottom") +
+  coord_cartesian(ylim = c(-.4, .25)) +
+  scale_y_continuous(breaks = seq(-.4, .25, by = .05), labels = ~round(.x, 2))
+
+covrlineplot_flat <- simresultslongcovr_flat %>%
+  group_by(m, n, sigma, k, type) %>%
+  summarize(covrmean = mean(covr), covrse = sd(covr) / sqrt(n())) %>%
+  ggplot(aes(x = as.factor(m), y = covrmean, group = type, linetype = type)) +
+  theme_bw() +
+  facet_grid(k~n, labeller = labeller(k = k_labeller, n = n_labeller)) +
+  geom_line() +
+  geom_errorbar(aes(ymin = covrmean - 2 * covrse, ymax = covrmean + 2 * covrse), width = ERRORBARWIDTH) +
+  geom_hline(aes(yintercept = 0.95)) +
+  scale_linetype_discrete(labels = c("gam" = "GAM", "gamm" = "GAMM", "new" = "PML (new)")) +
+  labs(
+    title = "Empirical coverage, f(x)",
+    x = "Number of Groups",
+    y = "Empirical coverage, %",
+    linetype = "Model"
+  ) +
+  scale_y_continuous(breaks = seq(0, 1, by = .1), labels = scales::percent_format()) +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme(text = element_text(size = PLOTTEXTSIZE), legend.position = "bottom")
+
 
 ## Save figures ##
 FIGUREWIDTH = 7
@@ -733,3 +808,8 @@ ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-multiple-f
 ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-small-bias.pdf")), plot = biasplot_small, width = FIGUREWIDTH, height = FIGUREHEIGHT)
 ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-small-sigma.pdf")), plot = biasplotsigma_small, width = FIGUREWIDTH, height = FIGUREHEIGHT)
 ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-small-covr.pdf")), plot = covrlineplot_small, width = FIGUREWIDTH, height = FIGUREHEIGHT)
+
+# Flat function
+ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-flat-bias.pdf")), plot = biasplot_flat, width = FIGUREWIDTH, height = FIGUREHEIGHT)
+ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-flat-sigma.pdf")), plot = biasplotsigma_flat, width = FIGUREWIDTH, height = FIGUREHEIGHT)
+ggsave(filename = file.path(figurespath, paste0("figure-", simdate, "-flat-covr.pdf")), plot = covrlineplot_flat, width = FIGUREWIDTH, height = FIGUREHEIGHT)
