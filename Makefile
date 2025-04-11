@@ -14,6 +14,7 @@ simulations:
 	Rscript 05-sims-sigma.R $(numsims) "sims-sigma-$(date)-v$(version)" $(version)
 	Rscript 06-sims-k.R $(numsims) "sims-k-$(date)-v$(version)" $(version)
 	Rscript 07-sims-small-m.R $(numsims) "sims-small-$(date)-v$(version)" $(version)
+	Rscript 08-sims-flat.R $(numsims) "sims-flat-$(date)-v$(version)" $(version)
 	Rscript summarize-simulations.R $(date)
 	
 	
